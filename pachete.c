@@ -1,4 +1,7 @@
 #include<stdio.h>
+#include<stdlib.h>
+#include<math.h>
+#include<string.h>
 
 typedef struct {
   int id;
@@ -11,11 +14,17 @@ typedef struct {
   int idCartier;
   int strada;
   int numar;
-  unsigned char prioritate; //pt a salva spatiu (in cerinta nu -sa specificat tipul)
+  unsigned char prioritate; //pt a salva spatiu (in cerinta nu s-a specificat tipul)
   float greutate;
   char* mesaj;
   int codificareMesaj;
 } pachet;
+
+typedef struct {
+  int id;
+  int nrPachete;
+  int distribuite[50];
+} postas;
 
 int main()
 {

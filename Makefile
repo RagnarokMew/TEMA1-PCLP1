@@ -1,4 +1,10 @@
-build: 
-	gcc pachete.c -o pachete
+CC = gcc
+FLAGS = -Wall
+PROGS = pachete
+all: $(PROGS)
+
+pachete: pachete.c
+	$(CC) pachete.c -lm -o pachete $(FLAGS)
+
 clean:
-	rm pachete
+	rm -f *~ *.out $(PROGS)
