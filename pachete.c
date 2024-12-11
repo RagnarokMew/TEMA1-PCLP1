@@ -31,6 +31,8 @@ void freeAll(int nrC, int nrP, cartier* cartiere, pachet* pachete);
 
 void outputCerinta1(int nrC, cartier* cartiere, int nrP, pachet* pachete);
 
+void processAddress(pachet* target);
+
 int main()
 {
   //alegerea taskului selectat
@@ -103,6 +105,11 @@ void readInput(int* nrC, int* nrP, cartier** cartiere, pachet** pachete) {
     buff[strlen(buff)-1]= '\0';
     (*pachete)[i].mesaj = (char*)malloc(strlen(buff)+1);
     strcpy((*pachete)[i].mesaj,buff);
+
+    //seteaza defaultul pt valori pt a putea fi modificate mai tarziu
+    (*pachete)[i].strada = 0;
+    (*pachete)[i].idCartier = 0;
+    (*pachete)[i].numar = 0;
   }
 }
 
@@ -130,4 +137,25 @@ void outputCerinta1(int nrC, cartier* cartiere, int nrP, pachet* pachete) {
   }
 }
 
+void processAddress(pachet* target) {
+  // extract idCartier
+  int pow = 1;
+  for(int i = 4; i >= 0; i--) {
+    target->idCartier+=pow*target->adresa[i];
+    pow*=2;
+  }
 
+  // extract strada
+  pow = 1;
+  for(int i = 9; i >= 5; i++) {
+    target->strada+=target->adresa[i];
+    pow*=2;
+  }
+
+  // extract numar
+  pow = 1;
+  for(int i = 17; i >= 10; i++) {
+    target->numar+=target->adresa[i];
+    pow*=2;
+  }
+}
