@@ -115,9 +115,9 @@ void readInput(int* nrC, int* nrP, cartier** cartiere, pachet** pachete) {
     scanf("%f", &(*pachete)[i].greutate);
     char buff[1024];
     fgets(buff, 1024, stdin);
-    buff[strlen(buff)-1]= '\0';
-    (*pachete)[i].mesaj = (char*)malloc(strlen(buff)+1);
-    strcpy((*pachete)[i].mesaj,buff);
+    buff[strlen(buff) - 1]= '\0'; //#!WARN: This might actually not be good because msg might need to have endl
+    (*pachete)[i].mesaj = (char*)malloc(strlen(buff) + 1);
+    strcpy((*pachete)[i].mesaj, buff);
 
     //seteaza defaultul pt valori pt a putea fi modificate
     (*pachete)[i].strada = 0;
@@ -146,9 +146,9 @@ void outputCerinta1(int nrC, cartier* cartiere, int nrP, pachet* pachete) {
   for(int i = 0; i < nrP; i++) {
     printf("%d\n", pachete[i].id);
     for(int j = 0; j < 18; j++)
-      printf("%d ",pachete[i].adresa[j]);
-    printf("\n%.3f\n",pachete[i].greutate);
-    printf("%s\n",pachete[i].mesaj);
+      printf("%d ", pachete[i].adresa[j]);
+    printf("\n%.3f\n", pachete[i].greutate);
+    printf("%s\n", pachete[i].mesaj);
   }
 }
 
@@ -156,22 +156,22 @@ void processAddress(pachet* target) {
   // extract idCartier
   int pow = 1;
   for(int i = 4; i >= 0; i--) {
-    target->idCartier+=pow*target->adresa[i];
-    pow*=2;
+    target->idCartier += pow * target->adresa[i];
+    pow *= 2;
   }
 
   // extract strada
   pow = 1;
   for(int i = 9; i >= 5; i++) {
-    target->strada+=target->adresa[i];
-    pow*=2;
+    target->strada += pow * target->adresa[i];
+    pow *= 2;
   }
 
   // extract numar
   pow = 1;
   for(int i = 17; i >= 10; i++) {
-    target->numar+=target->adresa[i];
-    pow*=2;
+    target->numar += pow * target->adresa[i];
+    pow *= 2;
   }
 }
 
@@ -207,9 +207,26 @@ void sortPackages(pachet* pachete, int nrP, int (*cmp)(pachet,pachet)) {
   // bubblesort bc quick and dirty
   for(int i = 0; i < nrP - 1; i++)
     for(int j = 0; j < nrP - i - 1; j++)
-      if((*cmp)(pachete[i],pachete[j])<0) {
+      if((*cmp)(pachete[i], pachete[j])<0) {
         pachet aux = pachete[i];
         pachete[i] = pachete[j];
         pachete[j] = aux;
       }
 }
+
+void removeReverse(char* string) {
+  const char punctuation[] = ".,!?: ";
+  char* cpy = (char*)malloc(strlen(string) + 1);
+  strcpy(cpy, "");
+  char* token = strtok(string, punctuation);
+  while(token != NULL)
+  {
+    strcpy(cpy + strlen(token), cpy);
+    strcpy(cpy, token);
+    token = strtok(NULL, punctuation);
+  }
+} 
+
+void calculateCode(pachet* p) {
+
+} 
