@@ -25,13 +25,23 @@ typedef struct {
   int distribuite[50];
 } postas;
 
-void readInput(int* nrC, int* nrP, cartier** cartiere, pachet** pachete);
+void readInput(int* nrC, int* nrP, cartier** cartiere, pachet** pachete); // Cerinta 1.1
 
-void freeAll(int nrC, int nrP, cartier* cartiere, pachet* pachete);
+void freeAll(int nrC, int nrP, cartier* cartiere, pachet* pachete, postas* postasi); // Utility func
 
-void outputCerinta1(int nrC, cartier* cartiere, int nrP, pachet* pachete);
+void outputCerinta1(int nrC, cartier* cartiere, int nrP, pachet* pachete); // Cerinta 1
 
-void processAddress(pachet* target);
+void processAddress(pachet* target); // Cerinta 1.2
+
+void distributePackage(int nrC, postas** postasi, int nrP, pachet* pachete); // Cerinta 1.3
+
+int condSortPackage(pachet a, pachet b); // Cerinta 1.4
+
+void sortPackages(pachet* pachete, int nrP, int (*cmp)(pachet,pachet)); // Cerinta 1.4
+
+void removeReverse(char* string); // Cerinta 1.5
+
+void calculateCode(pachet* p); // Cerinta 1.5
 
 int main()
 {
@@ -42,8 +52,11 @@ int main()
   //Declarare + citire input
   pachet* pachete;
   cartier* cartiere;
+  postas* postasi;
   int nrP, nrC;
   readInput(&nrC, &nrP, &cartiere, &pachete);
+
+  distributePackage(nrC, &postasi, nrP, pachete);//!WARN: Nush daca asta trb aici dar pun sa nu plang dupa;
 
   //selectarea cerintei / taskului
   switch(task) {
@@ -74,7 +87,7 @@ int main()
       break;
   }
 
-  freeAll(nrC, nrP, cartiere, pachete);
+  freeAll(nrC, nrP, cartiere, pachete, postasi);
   return 0;
 }
 
@@ -106,18 +119,20 @@ void readInput(int* nrC, int* nrP, cartier** cartiere, pachet** pachete) {
     (*pachete)[i].mesaj = (char*)malloc(strlen(buff)+1);
     strcpy((*pachete)[i].mesaj,buff);
 
-    //seteaza defaultul pt valori pt a putea fi modificate mai tarziu
+    //seteaza defaultul pt valori pt a putea fi modificate
     (*pachete)[i].strada = 0;
     (*pachete)[i].idCartier = 0;
     (*pachete)[i].numar = 0;
+    processAddress(&(*pachete)[i]);
   }
 }
 
 // Elibereaza memoria alocata dinamic structurilor
-void freeAll(int nrC, int nrP, cartier* cartiere, pachet* pachete) {
+void freeAll(int nrC, int nrP, cartier* cartiere, pachet* pachete, postas* postasi) {
   for(int i = 0; i < nrC; i++)
     free(cartiere[i].nume);
   free(cartiere);
+  free(postasi);
 
   for(int i = 0; i < nrP; i++)
     free(pachete[i].mesaj);
@@ -158,4 +173,43 @@ void processAddress(pachet* target) {
     target->numar+=target->adresa[i];
     pow*=2;
   }
+}
+
+void distributePackage(int nrC, postas** postasi, int nrP, pachet* pachete) {
+  // Initializeaza postasi
+  *postasi = (postas*)malloc(nrC * sizeof(postas));
+  for(int i = 0; i < nrC; i++) {
+    (*postasi)[i].id = 0;
+    (*postasi)[i].nrPachete = 0;
+  }
+  
+  // Distribuieste pachete
+  for(int i = 0; i < nrP; i++) {
+    (*postasi)[pachete[i].strada].distribuite[(*postasi)[pachete[i].strada].nrPachete] = pachete[i].id;
+    (*postasi)[pachete[i].strada].nrPachete++;
+  }
+}
+
+// Functie de conditie: 1: ordonate corect; -1: ordonate incorect; 0: valori egale 
+int condSortPackage(pachet a, pachet b) {
+  if(a.prioritate < b.prioritate)
+    return -1;
+  if(a.prioritate > b.prioritate)
+    return 1;
+  if(a.greutate < b.greutate)
+    return -1;
+  if(a.greutate > b.greutate)
+    return 1;
+  return 0;
+}
+
+void sortPackages(pachet* pachete, int nrP, int (*cmp)(pachet,pachet)) {
+  // bubblesort bc quick and dirty
+  for(int i = 0; i < nrP - 1; i++)
+    for(int j = 0; j < nrP - i - 1; j++)
+      if((*cmp)(pachete[i],pachete[j])<0) {
+        pachet aux = pachete[i];
+        pachete[i] = pachete[j];
+        pachete[j] = aux;
+      }
 }
