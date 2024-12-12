@@ -30,8 +30,6 @@ void readInput(int* nrC, int* nrP, cartier** cartiere, pachet** pachete); // Cer
 
 void freeAll(int nrC, int nrP, cartier* cartiere, pachet* pachete, postas* postasi); // Utility function, elibereaza memoria alocata dinamic
 
-void outputCerinta1(int nrC, cartier* cartiere, int nrP, pachet* pachete); // Cerinta 1
-
 void processAddress(pachet* target); // Cerinta 1.2
 
 void distributePackage(int nrC, postas** postasi, int nrP, pachet* pachete); // Cerinta 1.3
@@ -54,6 +52,22 @@ int isPrime(int n); // Helper function, verf daca nr este prim
 //#!WARN: nush cum ar trb sa implementez asta tbh, like cred ca ar trb sa trimit si toate
 double calculateScore(postas p); // Cerinta 2.7
 
+// Outputuri Task 
+
+void outputTask1(int nrC, cartier* cartiere, int nrP, pachet* pachete);
+
+void outputTask2(int nrP, pachet* pachete);
+
+void outputTask3();
+
+void outputTask4();
+
+void outputTask5();
+
+void outputTask6();
+
+void outputTask7();
+
 int main()
 {
   //alegerea taskului selectat
@@ -66,11 +80,6 @@ int main()
   postas* postasi;
   int nrP, nrC;
 
-  char test[100]="Ana, are cel mult 3 mere";
-  removeReverse(test);
-  printf("%s",test);
-  return 0;
-
   readInput(&nrC, &nrP, &cartiere, &pachete);
 
   distributePackage(nrC, &postasi, nrP, pachete);//!WARN: Nush daca asta trb aici dar pun sa nu plang dupa;
@@ -79,7 +88,7 @@ int main()
   switch(task) {
     case 1:
       //!TODO
-      outputCerinta1(nrC, cartiere, nrP, pachete);
+      outputTask1(nrC, cartiere, nrP, pachete);
       break;
     case 2:
       //!TODO
@@ -157,7 +166,7 @@ void freeAll(int nrC, int nrP, cartier* cartiere, pachet* pachete, postas* posta
   free(pachete);
 }
 
-void outputCerinta1(int nrC, cartier* cartiere, int nrP, pachet* pachete) {
+void outputTask1(int nrC, cartier* cartiere, int nrP, pachet* pachete) {
   for(int i = 0; i < nrC; i++)
     printf("%d %s\n", cartiere[i].id, cartiere[i].nume);
 
@@ -300,3 +309,20 @@ double calculateScore(postas p) {
   //#!NOTE: Implementation goes here
   return 1.* correct_dist / p.nrPachete;
 }
+
+void outputTask2(int nrP, pachet* pachete) {
+  for(int i = 0; i < nrP; i++) {
+    printf("%d\n", pachete[i].id);
+    printf("%d %d %d\n", pachete[i].idCartier, pachete[i].strada, pachete[i].numar);
+  }
+}
+
+void outputTask3();
+
+void outputTask4();
+
+void outputTask5();
+
+void outputTask6();
+
+void outputTask7();
