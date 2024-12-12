@@ -58,7 +58,7 @@ void outputTask1(int nrC, cartier* cartiere, int nrP, pachet* pachete);
 
 void outputTask2(int nrP, pachet* pachete);
 
-void outputTask3();
+void outputTask3(int nrC, postas* postasi);
 
 void outputTask4();
 
@@ -94,6 +94,7 @@ int main()
       break;
     case 3:
       //!TODO
+      outputTask3(nrC, postasi);
       break;
     case 4:
       //!TODO
@@ -213,7 +214,7 @@ void distributePackage(int nrC, postas** postasi, int nrP, pachet* pachete) {
   // Distribuieste pachete
   for(int i = 0; i < nrP; i++) {
     (*postasi)[pachete[i].idCartier].distribuite[(*postasi)[pachete[i].idCartier].nrPachete] = pachete[i].id;
-    (*postasi)[pachete[i].strada].nrPachete++;
+    (*postasi)[pachete[i].idCartier].nrPachete++;
   }
 }
 
@@ -317,7 +318,16 @@ void outputTask2(int nrP, pachet* pachete) {
   }
 }
 
-void outputTask3();
+void outputTask3(int nrC, postas* postasi) {
+  for(int i = 0; i < nrC; i++) {
+    printf("%d %d\n", postasi[i].id, postasi[i].nrPachete);
+    for(int j = 0; j < postasi[i].nrPachete - 1; j++)
+      printf("%d ", postasi[i].distribuite[j]);
+
+    if(postasi[i].nrPachete != 0)
+      printf("%d\n", postasi[i].distribuite[postasi[i].nrPachete - 1]);
+  }
+}
 
 void outputTask4();
 
