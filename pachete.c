@@ -60,8 +60,6 @@ void outputTask2(int nrP, pachet* pachete);
 
 void outputTask3(int nrC, postas* postasi);
 
-void outputTask4();
-
 void outputTask5();
 
 void outputTask6();
@@ -82,7 +80,7 @@ int main()
 
   readInput(&nrC, &nrP, &cartiere, &pachete);
 
-  distributePackage(nrC, &postasi, nrP, pachete);//!WARN: Nush daca asta trb aici dar pun sa nu plang dupa;
+  //distributePackage(nrC, &postasi, nrP, pachete);//!WARN: might want to remove this since moved to switch statement
 
   //selectarea cerintei / taskului
   switch(task) {
@@ -93,11 +91,13 @@ int main()
       outputTask2(nrP, pachete);
       break;
     case 3:
-      //!TODO
+      distributePackage(nrC, &postasi, nrP, pachete); 
       outputTask3(nrC, postasi);
       break;
     case 4:
-      //!TODO
+      sortPackages(pachete, nrP, condSortPackage);
+      distributePackage(nrC, &postasi, nrP, pachete); 
+      outputTask3(nrC, postasi);
       break;
     case 5:
       //!TODO
@@ -235,9 +235,9 @@ void sortPackages(pachet* pachete, int nrP, int (*cmp)(pachet,pachet)) {
   // bubblesort bc quick and dirty
   for(int i = 0; i < nrP - 1; i++)
     for(int j = 0; j < nrP - i - 1; j++)
-      if((*cmp)(pachete[i], pachete[j])<0) {
-        pachet aux = pachete[i];
-        pachete[i] = pachete[j];
+      if((*cmp)(pachete[j], pachete[j+1])<0) {
+        pachet aux = pachete[j+1];
+        pachete[j+1] = pachete[j];
         pachete[j] = aux;
       }
 }
@@ -328,8 +328,6 @@ void outputTask3(int nrC, postas* postasi) {
       printf("%d\n", postasi[i].distribuite[postasi[i].nrPachete - 1]);
   }
 }
-
-void outputTask4();
 
 void outputTask5();
 
