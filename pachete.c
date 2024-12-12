@@ -72,7 +72,7 @@ int main()
 {
   //alegerea taskului selectat
   int task;
-  scanf("%d", &task);
+  scanf("%d\n", &task);
 
   //Declarare + citire input
   pachet* pachete;
@@ -118,27 +118,27 @@ int main()
 }
 
 // Cerinta 1.1: citeste datele de intrare
-void readInput(int* nrC, int* nrP, cartier** cartiere, pachet** pachete) {
+void readInput(int* nrC, int* nrP, cartier** cartiere, pachet** pachete) { //#!WARN TODO: FIX SEGFAULT when reading;
   // Citire cartiere
-  scanf("%d", nrC);
+  scanf("%d\n", nrC);
   *cartiere = (cartier*)malloc(*nrC * sizeof(cartier));
   for(int i = 0; i < *nrC; i++) {
     (*cartiere)[i].id = i;
     char buff[1024];
-    scanf("%s", buff);
+    scanf("%s\n", buff);
     (*cartiere)[i].nume = (char*)malloc(strlen(buff) + 1);
     strcpy((*cartiere)[i].nume, buff);
   }
 
   //Citire pachete
-  scanf("%d", nrP);
+  scanf("%d\n", nrP);
   *pachete = (pachet*)malloc(*nrP * sizeof(pachet));
   for(int i = 0; i < *nrP; i++) {
     (*pachete)[i].id = i;
     for(int j = 0; j < 18; j++)
       scanf("%d", &(*pachete)[i].adresa[j]);
-    scanf("%d", &(*pachete)[i].prioritate);
-    scanf("%f", &(*pachete)[i].greutate);
+    scanf("\n%d\n", &(*pachete)[i].prioritate);
+    scanf("%f\n", &(*pachete)[i].greutate);
     char buff[101];
     fgets(buff, 100, stdin);
     buff[strlen(buff) - 1]= '\0'; //#!WARN: This might actually not be good because msg might need to have endl
@@ -172,9 +172,10 @@ void outputTask1(int nrC, cartier* cartiere, int nrP, pachet* pachete) {
 
   for(int i = 0; i < nrP; i++) {
     printf("%d\n", pachete[i].id);
-    for(int j = 0; j < 18; j++)
+    for(int j = 0; j < 17; j++)
       printf("%d ", pachete[i].adresa[j]);
-    printf("\n%.3f\n", pachete[i].greutate);
+    printf("%d\n", pachete[i].adresa[17]);
+    printf("%d %.3f\n", pachete[i].prioritate, pachete[i].greutate);
     printf("%s\n", pachete[i].mesaj);
   }
 }
@@ -189,14 +190,14 @@ void processAddress(pachet* target) {
 
   // extract strada
   pow = 1;
-  for(int i = 9; i >= 5; i++) {
+  for(int i = 9; i >= 5; i--) {
     target->strada += pow * target->adresa[i];
     pow *= 2;
   }
 
   // extract numar
   pow = 1;
-  for(int i = 17; i >= 10; i++) {
+  for(int i = 17; i >= 10; i--) {
     target->numar += pow * target->adresa[i];
     pow *= 2;
   }
