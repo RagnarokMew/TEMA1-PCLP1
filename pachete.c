@@ -87,11 +87,10 @@ int main()
   //selectarea cerintei / taskului
   switch(task) {
     case 1:
-      //!TODO
       outputTask1(nrC, cartiere, nrP, pachete);
       break;
     case 2:
-      //!TODO
+      outputTask2(nrP, pachete);
       break;
     case 3:
       //!TODO
