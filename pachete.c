@@ -42,6 +42,8 @@ void removeReverse(char* string); // Cerinta 1.5 #!NOTE: tested should work remo
 
 void calculateCode(pachet* p); // Cerinta 1.5
 
+int getPachetPosById(int pachetId, int nrP, pachet* pachete); // Helper function
+
 // #!WARN: nush cum ar trb sa functioneze asta, modifica doar pachetele sale, toate pachetele etc
 void postasDoBad(postas* p); // Cerinta 2.6
 
@@ -60,7 +62,7 @@ void outputTask2(int nrP, pachet* pachete);
 
 void outputTask3(int nrC, postas* postasi);
 
-void outputTask5();
+void outputTask5(int nrC, postas* postasi, int nrP, pachet* pachete);
 
 void outputTask6();
 
@@ -101,6 +103,9 @@ int main()
       break;
     case 5:
       //!TODO
+      sortPackages(pachete, nrP, condSortPackage);
+      distributePackage(nrC, &postasi, nrP, pachete);
+      outputTask5(nrC, postasi, nrP, pachete);
       break;
     case 6:
       //!TODO
@@ -215,7 +220,10 @@ void distributePackage(int nrC, postas** postasi, int nrP, pachet* pachete) {
   for(int i = 0; i < nrP; i++) {
     (*postasi)[pachete[i].idCartier].distribuite[(*postasi)[pachete[i].idCartier].nrPachete] = pachete[i].id;
     (*postasi)[pachete[i].idCartier].nrPachete++;
+    removeReverse(pachete[i].mesaj);
+    calculateCode(&pachete[i]);
   }
+
 }
 
 // Functie de conditie: 1: ordonate corect; -1: ordonate incorect; 0: valori egale 
@@ -259,9 +267,17 @@ void removeReverse(char* string) {
 
 void calculateCode(pachet* p) {
   for(int i = 0; i < strlen(p->mesaj); i++)
-    p->codificareMesaj += i + p->mesaj[i];
+    p->codificareMesaj += i * p->mesaj[i];
 
-  p->codificareMesaj %= (p->numar + p->strada + 1);
+  p->codificareMesaj %= (p->numar * p->strada + 1);
+}
+
+int getPachetPosById(int pachetId, int nrP, pachet* pachete) {
+  for(int i = 0; i < nrP; i++)
+    if(pachetId == pachete[i].id)
+      return i;
+
+  return 0; // #!NOTE: should never get here WTF
 }
 
 // #!WARN: nush cum ar trb sa functioneze asta, modifica doar pachetele sale, toate pachetele etc
@@ -329,7 +345,13 @@ void outputTask3(int nrC, postas* postasi) {
   }
 }
 
-void outputTask5();
+void outputTask5(int nrC, postas* postasi, int nrP, pachet* pachete) {
+  for(int i = 0; i < nrC; i++) {
+    printf("%d %d\n", postasi[i].id, postasi[i].nrPachete);
+    for(int j = 0; j < postasi[i].nrPachete; j++)
+      printf("%d %d\n", postasi[i].distribuite[j], pachete[getPachetPosById(postasi[i].distribuite[j], nrP, pachete)].codificareMesaj);
+  }
+}
 
 void outputTask6();
 
