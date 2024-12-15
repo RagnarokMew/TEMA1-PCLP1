@@ -40,12 +40,11 @@ void sortPackages(pachet* pachete, int nrP, int (*cmp)(pachet,pachet)); // Cerin
 
 void removeReverse(char* string); // Cerinta 1.5 #!NOTE: tested should work remove when done
 
-void calculateCode(pachet* p); // Cerinta 1.5
+int calculateCode(pachet p); // Cerinta 1.5
 
 int getPachetPosById(int pachetId, int nrP, pachet* pachete); // Helper function
 
-// #!WARN: nush cum ar trb sa functioneze asta, modifica doar pachetele sale, toate pachetele etc
-void postasDoBad(postas* p); // Cerinta 2.6
+void postasDoBad(postas* postasi, int idPostas, pachet* pachete, int nrP); // Cerinta 2.6
 
 void alterCodes(int* code, int idPostas); // Cerinta 2.6
 
@@ -63,8 +62,6 @@ void outputTask2(int nrP, pachet* pachete);
 void outputTask3(int nrC, postas* postasi);
 
 void outputTask5(int nrC, postas* postasi, int nrP, pachet* pachete);
-
-void outputTask6();
 
 void outputTask7();
 
@@ -102,13 +99,17 @@ int main()
       outputTask3(nrC, postasi);
       break;
     case 5:
-      //!TODO
       sortPackages(pachete, nrP, condSortPackage);
       distributePackage(nrC, &postasi, nrP, pachete);
       outputTask5(nrC, postasi, nrP, pachete);
       break;
     case 6:
       //!TODO
+      sortPackages(pachete, nrP, condSortPackage);
+      distributePackage(nrC, &postasi, nrP, pachete);
+      for(int i = 0; i < nrC; i++)
+        postasDoBad(postasi, i, pachete, nrP);
+      outputTask5(nrC, postasi, nrP, pachete);
       break;
     case 7:
       //!TODO
@@ -221,7 +222,7 @@ void distributePackage(int nrC, postas** postasi, int nrP, pachet* pachete) {
     (*postasi)[pachete[i].idCartier].distribuite[(*postasi)[pachete[i].idCartier].nrPachete] = pachete[i].id;
     (*postasi)[pachete[i].idCartier].nrPachete++;
     removeReverse(pachete[i].mesaj);
-    calculateCode(&pachete[i]);
+    pachete[i].codificareMesaj = calculateCode(pachete[i]);
   }
 
 }
@@ -265,11 +266,13 @@ void removeReverse(char* string) {
   free(cpy);
 } 
 
-void calculateCode(pachet* p) {
-  for(int i = 0; i < strlen(p->mesaj); i++)
-    p->codificareMesaj += i * p->mesaj[i];
+int calculateCode(pachet p) {
+  int code = 0;
+  for(int i = 0; i < strlen(p.mesaj); i++)
+    code += i * p.mesaj[i];
 
-  p->codificareMesaj %= (p->numar * p->strada + 1);
+  code %= (p.numar * p.strada + 1);
+  return code;
 }
 
 int getPachetPosById(int pachetId, int nrP, pachet* pachete) {
@@ -280,8 +283,20 @@ int getPachetPosById(int pachetId, int nrP, pachet* pachete) {
   return 0; // #!NOTE: should never get here WTF
 }
 
-// #!WARN: nush cum ar trb sa functioneze asta, modifica doar pachetele sale, toate pachetele etc
-void postasDoBad(postas* p); //Cerinta 2.6
+void postasDoBad(postas* postasi, int idPostas, pachet* pachete, int nrP) {
+  char sIdPostas[11];
+  char sCodPachet[11];
+  sprintf(sIdPostas, "%d", idPostas);
+  for(int i = 0; i < postasi[idPostas].nrPachete; i++) {
+    int pachetIndex = getPachetPosById(postasi[idPostas].distribuite[i], nrP, pachete);
+    sprintf(sCodPachet, "%d", pachete[pachetIndex].codificareMesaj);
+    for(int j = 0; j < strlen(sCodPachet); j++)
+      if(strchr(sIdPostas, sCodPachet[j])) {
+        alterCodes(&pachete[pachetIndex].codificareMesaj, idPostas);
+        break;
+      }
+  }
+}
 
 void alterCodes(int* code, int idPostas) {
   int prime_factors[11];
@@ -292,22 +307,20 @@ void alterCodes(int* code, int idPostas) {
   {
     prime_factors[0] = idPostas;
     num = 1;
-    goto startalter;
   }
   
   //gasirea factorilor
-  for(int i = 2; i <= sqrt(idPostas) && i < 32; i++)
+  for(int i = 2; i <= idPostas && i < 32; i++)
     if(idPostas % i == 0 && isPrime(i))
       prime_factors[num++] = i;
 
-  startalter:
-    for(int i = 0; i < num; i++)
-      *code ^= (1<<prime_factors[i]); // negarea bitului de pe poz; 1^1 = 0; 0^1 = 1; 1^0 = 1; 0^0 = 0;
+  for(int i = 0; i < num; i++)
+    *code ^= (1<<prime_factors[i]); // negarea bitului de pe poz; 1^1 = 0; 0^1 = 1; 1^0 = 1; 0^0 = 0;
   return;
 }
 
 int isPrime(int n) {
-  if(n == 0 || n == 1 || (n != 2 && (n & 1) == 1) ) //cond pt care un nr nu e prim + verf imp cu bitwise 1 bc I can 
+  if(n == 0 || n == 1) 
     return 0;
 
   for(int i = 2; i <= sqrt(n); i++)
@@ -352,7 +365,5 @@ void outputTask5(int nrC, postas* postasi, int nrP, pachet* pachete) {
       printf("%d %d\n", postasi[i].distribuite[j], pachete[getPachetPosById(postasi[i].distribuite[j], nrP, pachete)].codificareMesaj);
   }
 }
-
-void outputTask6();
 
 void outputTask7();
