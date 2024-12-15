@@ -51,7 +51,7 @@ void alterCodes(int* code, int idPostas); // Cerinta 2.6
 int isPrime(int n); // Helper function, verf daca nr este prim 
 
 //#!WARN: nush cum ar trb sa implementez asta tbh, like cred ca ar trb sa trimit si toate
-double calculateScore(postas p); // Cerinta 2.7
+double calculateScore(postas p, int nrP, pachet* pachete); // Cerinta 2.7
 
 // Outputuri Task 
 
@@ -63,7 +63,7 @@ void outputTask3(int nrC, postas* postasi);
 
 void outputTask5(int nrC, postas* postasi, int nrP, pachet* pachete);
 
-void outputTask7();
+void outputTask7(int nrC, postas* postasi, int nrP, pachet* pachete);
 
 int main()
 {
@@ -104,7 +104,6 @@ int main()
       outputTask5(nrC, postasi, nrP, pachete);
       break;
     case 6:
-      //!TODO
       sortPackages(pachete, nrP, condSortPackage);
       distributePackage(nrC, &postasi, nrP, pachete);
       for(int i = 0; i < nrC; i++)
@@ -112,7 +111,11 @@ int main()
       outputTask5(nrC, postasi, nrP, pachete);
       break;
     case 7:
-      //!TODO
+      sortPackages(pachete, nrP, condSortPackage);
+      distributePackage(nrC, &postasi, nrP, pachete);
+      for(int i = 0; i < nrC; i++)
+        postasDoBad(postasi, i, pachete, nrP);
+      outputTask7(nrC, postasi, nrP, pachete);
       break;
     default:
       printf("No such task.");
@@ -330,11 +333,18 @@ int isPrime(int n) {
 }
 
 //#!TODO implement the function
-double calculateScore(postas p) {
+double calculateScore(postas p, int nrP, pachet* pachete) {
   if(p.nrPachete == 0)
     return 0;
   
   int correct_dist = 0;
+
+  int pachetIndex;
+  for(int i = 0; i < p.nrPachete; i++) {
+    pachetIndex = getPachetPosById(p.distribuite[i], nrP, pachete);
+    if(pachete[pachetIndex].codificareMesaj == calculateCode(pachete[pachetIndex]))
+      correct_dist++;
+  }
 
   //#!NOTE: Implementation goes here
   return 1.* correct_dist / p.nrPachete;
@@ -366,4 +376,7 @@ void outputTask5(int nrC, postas* postasi, int nrP, pachet* pachete) {
   }
 }
 
-void outputTask7();
+void outputTask7(int nrC, postas* postasi, int nrP, pachet* pachete) {
+  for(int i = 0; i < nrC; i++)
+    printf("%d %.3f\n", postasi[i].id, calculateScore(postasi[i], nrP, pachete));
+}
