@@ -329,7 +329,7 @@ void alterCodes(int* code, int idPostas) {
       primeFactors[num++] = i;
 
   for(int i = 0; i < num; i++)
-    *code ^= (1<<primeFactors[i]); // negarea bitului de pe poz (prime_facotrs); 1^1 = 0; 0^1 = 1; 1^0 = 1; 0^0 = 0;
+    *code ^= (1<<primeFactors[i]); // negarea bitului de pe poz (primeFacotrs); 1^1 = 0; 0^1 = 1; 1^0 = 1; 0^0 = 0;
   return;
 }
 
