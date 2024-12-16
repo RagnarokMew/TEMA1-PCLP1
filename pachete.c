@@ -26,13 +26,13 @@ typedef struct {
   int distribuite[50];
 } postas;
 
-void readInput(int* nrC, int* nrP, cartier** cartiere, pachet** pachete); // Cerinta 1.1
+void readInput(int* nrC, int* nrP, cartier** cartiere, pachet** pachete, postas** postasi); // Cerinta 1.1
 
 void freeAll(int nrC, int nrP, cartier* cartiere, pachet* pachete, postas* postasi); // Utility function, elibereaza memoria alocata dinamic
 
 void processAddress(pachet* target); // Cerinta 1.2
 
-void distributePackage(int nrC, postas** postasi, int nrP, pachet* pachete); // Cerinta 1.3
+void distributePackage(int nrC, postas* postasi, int nrP, pachet* pachete); // Cerinta 1.3
 
 int condSortPackage(pachet a, pachet b); // Cerinta 1.4
 
@@ -76,7 +76,7 @@ int main()
   postas* postasi;
   int nrP, nrC;
 
-  readInput(&nrC, &nrP, &cartiere, &pachete);
+  readInput(&nrC, &nrP, &cartiere, &pachete, &postasi);
 
   //selectarea cerintei / taskului
   // se apeleaza doar functiile asociate cu taskul respectiv
@@ -88,29 +88,29 @@ int main()
       outputTask2(nrP, pachete);
       break;
     case 3:
-      distributePackage(nrC, &postasi, nrP, pachete); 
+      distributePackage(nrC, postasi, nrP, pachete); 
       outputTask3(nrC, postasi);
       break;
     case 4:
       sortPackages(pachete, nrP, condSortPackage);
-      distributePackage(nrC, &postasi, nrP, pachete); 
+      distributePackage(nrC, postasi, nrP, pachete); 
       outputTask3(nrC, postasi);
       break;
     case 5:
       sortPackages(pachete, nrP, condSortPackage);
-      distributePackage(nrC, &postasi, nrP, pachete);
+      distributePackage(nrC, postasi, nrP, pachete);
       outputTask5(nrC, postasi, nrP, pachete);
       break;
     case 6:
       sortPackages(pachete, nrP, condSortPackage);
-      distributePackage(nrC, &postasi, nrP, pachete);
+      distributePackage(nrC, postasi, nrP, pachete);
       for(int i = 0; i < nrC; i++)
         postasDoBad(postasi, i, pachete, nrP);
       outputTask5(nrC, postasi, nrP, pachete);
       break;
     case 7:
       sortPackages(pachete, nrP, condSortPackage);
-      distributePackage(nrC, &postasi, nrP, pachete);
+      distributePackage(nrC, postasi, nrP, pachete);
       for(int i = 0; i < nrC; i++)
         postasDoBad(postasi, i, pachete, nrP);
       outputTask7(nrC, postasi, nrP, pachete);
@@ -125,7 +125,7 @@ int main()
 }
 
 // Cerinta 1.1: citeste datele de intrare
-void readInput(int* nrC, int* nrP, cartier** cartiere, pachet** pachete) {
+void readInput(int* nrC, int* nrP, cartier** cartiere, pachet** pachete, postas** postasi) {
   // Citire cartiere
   scanf("%d\n", nrC);
   *cartiere = (cartier*)malloc(*nrC * sizeof(cartier)); // alocarea memoriei necesare pt cartiere
@@ -159,10 +159,12 @@ void readInput(int* nrC, int* nrP, cartier** cartiere, pachet** pachete) {
     (*pachete)[i].codificareMesaj = 0;
     processAddress(&(*pachete)[i]); // alocarea strazii, nr si id cartier in functie de bitii din adresa
   }
+
+  *postasi = (postas*)malloc(*nrC * sizeof(postas)); // alocarea memorier necesare pt postasi
 }
 
 // Elibereaza memoria alocata dinamic structurilor
-void freeAll(int nrC, int nrP, cartier* cartiere, pachet* pachete, postas* postasi) {
+void freeAll(int nrC, int nrP, cartier* cartiere, pachet* pachete, postas* postasi) {// #!WARN valgrind error here
   for(int i = 0; i < nrC; i++)
     free(cartiere[i].nume);
   free(cartiere);
@@ -211,18 +213,17 @@ void processAddress(pachet* target) {
   }
 }
 
-void distributePackage(int nrC, postas** postasi, int nrP, pachet* pachete) {
-  // Initializeaza postasi
-  *postasi = (postas*)malloc(nrC * sizeof(postas)); // alocarea memoriei pentru postasi
+void distributePackage(int nrC, postas* postasi, int nrP, pachet* pachete) {
+  // Initializeaza valorile postasi
   for(int i = 0; i < nrC; i++) {
-    (*postasi)[i].id = i;
-    (*postasi)[i].nrPachete = 0;
+    postasi[i].id = i;
+    postasi[i].nrPachete = 0;
   }
   
   // Distribuieste pachete
   for(int i = 0; i < nrP; i++) {
-    (*postasi)[pachete[i].idCartier].distribuite[(*postasi)[pachete[i].idCartier].nrPachete] = pachete[i].id;
-    (*postasi)[pachete[i].idCartier].nrPachete++;
+    postasi[pachete[i].idCartier].distribuite[postasi[pachete[i].idCartier].nrPachete] = pachete[i].id;
+    postasi[pachete[i].idCartier].nrPachete++;
     removeReverse(pachete[i].mesaj);
     pachete[i].codificareMesaj = calculateCode(pachete[i]);
   }
@@ -262,7 +263,7 @@ void sortPackages(pachet* pachete, int nrP, int (*cmp)(pachet, pachet)) {
 // la fiecare iteratie continutul copiei este mutat la dreapta cu lungimea cuvantului pentru inversare
 void removeReverse(char* string) {
   const char punctuation[] = ".,!?: ";
-  char* cpy = (char*)malloc(strlen(string) + 1); // alocare spatiu copie
+  char* cpy = (char*)malloc(strlen(string)); // alocare spatiu copie
   strcpy(cpy, "");
   char* token = strtok(string, punctuation);
   while(token != NULL)
@@ -271,7 +272,8 @@ void removeReverse(char* string) {
     strncpy(cpy, token, strlen(token)); // adaugare cuvant in copie
     token = strtok(NULL, punctuation);
   }
-  strcpy(string,cpy); // copiere continut final in string
+  cpy[strlen(cpy)]='\0';
+  strcpy(string,cpy); // copiere continut final in string #!WARN: valgrind errors here
   free(cpy); // eliberare memorie alocata dinamic
 } 
 
